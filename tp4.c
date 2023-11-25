@@ -125,7 +125,19 @@ void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
    printf("H(A/b = %d) = %f\n",num,suma);
 }
 
-int main() {
+
+
+int main(int argc, char argv[]) {
+
+    char nombre_archivo = argv[1];
+    //nombre_archivo = "tp4_sample0.txt";
+    int  N, M;
+    int estaP = 0;
+    N = atoi(&argv[2]);
+    M = atoi(&argv[3]);
+    if (argc == 5)
+       if (!strcmp(&argv[4],"-p"))
+          estaP = 1;
 
     float fuente[MAX_COLS]; //prob de que entre un 0 y de que entre un 1
     float matrizCanal[MAX_ROWS][MAX_COLS];
@@ -135,7 +147,7 @@ int main() {
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
     float equivoc_AB, entropiaDeA, entropiaDeB;
 
-    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); //A)
+    leerArchivo(nombre_archivo, fuente, matrizCanal); //A)
 
     calculaSucSimul(probSucSimul,fuente,matrizCanal);    //B)
 
