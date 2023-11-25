@@ -98,26 +98,32 @@ void calculaSucSimul(float probSucSimul[], float fuente[], float matrizCanal[MAX
    */ 
 }
 
-void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MAX_COLS], float *equivoc) {
+void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MAX_COLS], float *equivoc_AB) {
    int k = 0;
 
    for (int i = 0 ; i < 2 ; i++) 
       for ( int j = 0 ; j < 2 ; j++)
-         *equivoc += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
+         *equivoc_AB += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
 
-   printf("La equivocacion del canal es H(A/B) = %f bits\n",*equivoc);      
+   printf("La equivocacion del canal es H(A/B) = %f bits\n",*equivoc_AB);      
 }
 
 
-void calculoDeEntropiaDeA(float fuente[], float *entropiaDeA) {
+void calculoDeEntropiaDeX(float vector[], float *entropiaDeX) {
    int i;
 
    for ( i = 0 ; i < 2 ; i++ )
-      *entropiaDeA += fuente[i]*log2(1/fuente[i]);
+      *entropiaDeX += vector[i]*log2(1/vector[i]);
 
-   printf("La entropia de A es %f\n",*entropiaDeA);
 }
 
+void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
+   float suma = 0; 
+   for ( int i = 0 ; i < 2 ; i++ ) {
+      suma += matrizPosteriori[i][num]*log2(1/matrizPosteriori[i][num]);   
+   }
+   printf("H(A/b = %d) = %f\n",num,suma);
+}
 
 int main() {
 
@@ -127,7 +133,7 @@ int main() {
     float probB[MAX_COLS]; //probabilidad de que salga 0 y 1 sin saber que entro
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
-    float equivoc, entropiaDeA;
+    float equivoc_AB, entropiaDeA, entropiaDeB;
 
     leerArchivo("tp4_sample0.txt", fuente, matrizCanal); //A)
 
@@ -137,10 +143,18 @@ int main() {
 
     calculoMatrizPosteriori(matrizPosteriori,fuente,matrizCanal,probB);
 
-    equivocacionCanal(probSucSimul,matrizPosteriori,&equivoc);
-    calculoDeEntropiaDeA(fuente,&entropiaDeA);
-    printf("La informacion mutua del canal es I(A,B) = %f bits\n",entropiaDeA - equivoc);
-
+    equivocacionCanal(probSucSimul,matrizPosteriori,&equivoc_AB);
+    calculoDeEntropiaDeX(fuente,&entropiaDeA);
+    
+    calculoDeEntropiaDeX(probB,&entropiaDeB);
+    
+    printf("La informacion mutua del canal es I(A,B) = %f bits\n",entropiaDeA - equivoc_AB);
+    printf("\n---Entropias del canal:---\n");
+    printf("H(A)   = %f\n",entropiaDeA);
+    printf("H(B)   = %f\n",entropiaDeB);
+    printf("H(A,B) = %f\n",entropiaDeB + equivoc_AB);
+    entropiaPosteriori_A(matrizPosteriori,0);
+    entropiaPosteriori_A(matrizPosteriori,1);
     return 0;
 }
 
