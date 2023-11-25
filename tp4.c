@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define MAX_COLS 2
 #define MAX_ROWS 2
+
+
 
 //A)
 int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[MAX_ROWS][MAX_COLS]) {
@@ -33,49 +36,111 @@ int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[M
             }
         }
     }
-
-
-
     fclose(archivo);
     return 0;
 }
 
 
 //B)
-//Primero calculo las probabilidades a posteriori
 
-void calculaProbB(float probSalida[MAX_COLS]) { //calcula la probabilidad de que salga 0 y 1 sin saber que entro
+void calculaProbB(float probB[MAX_COLS], float fuente[], float matrizCanal[][MAX_COLS]) { //calcula la probabilidad de que salga 0 y 1 sin saber que entro
    
-   float suma = 0;
+   int i, j;
 
-   for ( int i = 0 ; i < 2 ; i++ ) {
-      for ( int j = 0 ; j < 2 ; j++ ) {
-        // suma += (fuente[j]*matrizCanal[i][j]);
+   for ( i = 0 ; i < 2 ; i++ ) {
+      for ( j = 0 ; j < 2 ; j++ ) {
+         probB[i] += (fuente[j]*matrizCanal[j][i]);
       }
    }
+
+   /*
+   for ( i = 0 ; i < 2 ; i++ )
+      printf("P(B = %d) = %f\n",i,probB[i]);
+   */
 }
 
-void incisoB(float probPosteriori) {
-   for ( int i = 0 ; i < 4 ; i++ ) {
-      //post -> P(0\0)
-      //post -> P(0\1)
-      //post -> P(1\0)
-      //post -> P(1\1)
+void calculoMatrizPosteriori(float matrizPosteriori[MAX_ROWS][MAX_COLS], float fuente[], float matrizCanal[MAX_ROWS][MAX_COLS], float probB[]) {
 
+   int i, j;
 
+   for ( i = 0 ; i < 2 ; i++ )
+      for ( j = 0 ; j < 2 ; j++ )
+         matrizPosteriori[i][j] =  ((fuente[i]*matrizCanal[i][j])/probB[j]);
+
+   /*
+   for ( i = 0; i < 2 ; i++ ) {
+      for ( j  = 0 ; j < 2 ; j++ ) {
+         printf("\n");
+         printf("P( a = %d / b = % d ) = %f",i,j,matrizPosteriori[i][j]);
+      }
    }
+   */
+}
+
+void calculaSucSimul(float probSucSimul[], float fuente[], float matrizCanal[MAX_ROWS][MAX_COLS]) {
+    int i, j, k = 0;
+
+    for ( i = 0 ; i < 2 ; i++ ) {
+       for ( j = 0 ; j < 2 ; j++ ) {
+          probSucSimul[k++] = fuente[i]*matrizCanal[i][j];
+       }
+    }
+
+   /*
+   k = 0;
+   for ( i = 0 ; i < 2 ; i++ ) {
+      for ( j = 0 ; j < 2 ; j++ ) {
+         printf("a = %d , b = %d\n",i,j);
+         printf("%f",probSucSimul[k++]);
+         printf("\n");
+      }
+    }
+   */ 
+}
+
+void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MAX_COLS], float *equivoc) {
+   int k = 0;
+
+   for (int i = 0 ; i < 2 ; i++) 
+      for ( int j = 0 ; j < 2 ; j++)
+         *equivoc += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
+
+   printf("La equivocacion del canal es H(A/B) = %f bits\n",*equivoc);      
+}
+
+
+void calculoDeEntropiaDeA(float fuente[], float *entropiaDeA) {
+   int i;
+
+   for ( i = 0 ; i < 2 ; i++ )
+      *entropiaDeA += fuente[i]*log2(1/fuente[i]);
+
+   printf("La entropia de A es %f\n",*entropiaDeA);
 }
 
 
 int main() {
 
     float fuente[MAX_COLS]; //prob de que entre un 0 y de que entre un 1
-    float matrizCanal [MAX_ROWS][MAX_COLS];
+    float matrizCanal[MAX_ROWS][MAX_COLS];
     float probPosteriori[MAX_ROWS][MAX_COLS];
-    float probSalida[MAX_COLS]; //probabilidad de que salga 0 y 1 sin saber que entro
+    float probB[MAX_COLS]; //probabilidad de que salga 0 y 1 sin saber que entro
+    float probSucSimul[4]; //probabilidad sucesos simultaneos
+    float matrizPosteriori[MAX_ROWS][MAX_COLS];
+    float equivoc, entropiaDeA;
 
-    leerArchivo("tp4_sample4.txt", fuente, matrizCanal); //A)
-       
+    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); //A)
+
+    calculaSucSimul(probSucSimul,fuente,matrizCanal);    //B)
+
+    calculaProbB(probB,fuente,matrizCanal);
+
+    calculoMatrizPosteriori(matrizPosteriori,fuente,matrizCanal,probB);
+
+    equivocacionCanal(probSucSimul,matrizPosteriori,&equivoc);
+    calculoDeEntropiaDeA(fuente,&entropiaDeA);
+    printf("La informacion mutua del canal es I(A,B) = %f bits\n",entropiaDeA - equivoc);
 
     return 0;
 }
+
