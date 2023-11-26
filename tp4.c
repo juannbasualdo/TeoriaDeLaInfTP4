@@ -108,7 +108,8 @@ void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MA
 
    for (int i = 0 ; i < 2 ; i++) 
       for ( int j = 0 ; j < 2 ; j++)
-         *equivoc_AB += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
+         if (matrizPosteriori[i][j] != 0)
+            *equivoc_AB += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
 
    printf("La equivocacion del canal es H(A/B) = %f bits\n",*equivoc_AB);      
 }
@@ -118,14 +119,16 @@ void calculoDeEntropiaDeX(float vector[], float *entropiaDeX) {
    int i;
 
    for ( i = 0 ; i < 2 ; i++ )
-      *entropiaDeX += vector[i]*log2(1/vector[i]);
+      if (vector[i] != 0)  
+         *entropiaDeX += vector[i]*log2(1/vector[i]);
 
 }
 
 void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
    float suma = 0; 
    for ( int i = 0 ; i < 2 ; i++ ) {
-      suma += matrizPosteriori[i][num]*log2(1/matrizPosteriori[i][num]);   
+      if (matrizPosteriori[i][num] != 0)
+         suma += matrizPosteriori[i][num]*log2(1/matrizPosteriori[i][num]);   
    }
    printf("H(A/b = %d) = %f\n",num,suma);
 }
@@ -274,7 +277,7 @@ int main() {
     int matMensajes[N][M];
 
     //A)
-    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); 
+    leerArchivo("tp4_sample6.txt", fuente, matrizCanal); 
 
     //B)
     calculaSucSimul(probSucSimul,fuente,matrizCanal);    
@@ -303,7 +306,7 @@ int main() {
     if (estaP)
        paridadCruzada(matMensajes,2,2);
 
-       
+
     return 0;
 }
 
