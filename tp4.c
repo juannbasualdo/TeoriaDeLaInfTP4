@@ -139,10 +139,10 @@ void generaMensajes(float matMensajes[MAX_MENS][MAX_MENS], int N, int M, float f
    // Establecer la semilla para la generación de números aleatorios
    srand(time(NULL));
 
-   for ( i = 0 ; i < N ; i++ )
+   //dejo la primer fila libre para bits de LRC
+   for ( i = 1 ; i <= N ; i++ )
       for ( j = 0 ; j < M ; j++ ) {
 
-         
          // Generar un número aleatorio entre 0 y RAND_MAX
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
@@ -157,6 +157,10 @@ void generaMensajes(float matMensajes[MAX_MENS][MAX_MENS], int N, int M, float f
       }      
 }
 
+void paridadCruzada(float matMensajes[MAX_MENS][MAX_MENS]) {
+
+}
+
 
 int main() {
 
@@ -165,8 +169,9 @@ int main() {
     //char nombre_archivo; 
     //strcpy(nombre_archivo,);
     int  N, M;
-    /*
     int estaP = 0;
+    /*
+    
     N = atoi(&argv[2]);
     M = atoi(&argv[3]);
     if (argc == 5)
@@ -183,9 +188,11 @@ int main() {
     float equivoc_AB, entropiaDeA, entropiaDeB;
     float matMensajes[N][M];
 
-    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); //A)
+    //A)
+    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); 
 
-    calculaSucSimul(probSucSimul,fuente,matrizCanal);    //B)
+    //B)
+    calculaSucSimul(probSucSimul,fuente,matrizCanal);    
 
     calculaProbB(probB,fuente,matrizCanal);
 
@@ -204,7 +211,9 @@ int main() {
     entropiaPosteriori_A(matrizPosteriori,0);
     entropiaPosteriori_A(matrizPosteriori,1);
    
+    //C)
     generaMensajes(matMensajes,N,M,fuente);
+
     return 0;
 }
 
