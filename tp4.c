@@ -229,9 +229,10 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
    }
    bitLRC = resultadoAnterior;
 
-   if (bitVRC == bitLRC)
+   if (bitVRC == bitLRC) {
       matMensajes[0][M] = bitVRC;
-
+      printf("Los bits coinciden\n");
+   }
 
    printf("\n");
    printf("Matriz resultante de aplicar el metodo de paridad cruzada:\n");
@@ -298,8 +299,11 @@ int main() {
     //C)
     generaMensajes(matMensajes,2,2,fuente);
    
-   //D)
-   paridadCruzada(matMensajes,2,2);
+    //D)
+    if (estaP)
+       paridadCruzada(matMensajes,2,2);
+
+       
     return 0;
 }
 
