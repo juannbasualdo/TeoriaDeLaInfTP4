@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
+#include <time.h>
 
 #define MAX_COLS 2
 #define MAX_ROWS 2
+#define MAX_LONG 20
+#define MAX_MENS 40
+
 
 
 
@@ -125,19 +130,49 @@ void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
    printf("H(A/b = %d) = %f\n",num,suma);
 }
 
+void generaMensajes(float matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fuente[]) {
+
+   int    i, j;
+   double random_value;
+   int    random_number;
+
+   // Establecer la semilla para la generación de números aleatorios
+   srand(time(NULL));
+
+   for ( i = 0 ; i < N ; i++ )
+      for ( j = 0 ; j < M ; j++ ) {
+
+         
+         // Generar un número aleatorio entre 0 y RAND_MAX
+         random_number = rand();
+         // Convertir el número a un valor entre 0 y 1
+          random_value = (double)random_number / RAND_MAX;
+         // Imprimir el resultado
+         printf("Número aleatorio entre 0 y 1: %lf\n", random_value);
+
+         if (random_value >= 0 && random_value <= fuente[0])
+            matMensajes[i][j] = 0;
+         else
+            matMensajes[i][j] = 1;
+      }      
+}
 
 
-int main(int argc, char argv[]) {
+int main() {
 
-    char nombre_archivo = argv[1];
-    //nombre_archivo = "tp4_sample0.txt";
+    //int argc, char argv[]
+    //char nombre_archivo = argv[1];
+    //char nombre_archivo; 
+    //strcpy(nombre_archivo,);
     int  N, M;
+    /*
     int estaP = 0;
     N = atoi(&argv[2]);
     M = atoi(&argv[3]);
     if (argc == 5)
        if (!strcmp(&argv[4],"-p"))
           estaP = 1;
+    */
 
     float fuente[MAX_COLS]; //prob de que entre un 0 y de que entre un 1
     float matrizCanal[MAX_ROWS][MAX_COLS];
@@ -146,8 +181,9 @@ int main(int argc, char argv[]) {
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
     float equivoc_AB, entropiaDeA, entropiaDeB;
+    float matMensajes[N][M];
 
-    leerArchivo(nombre_archivo, fuente, matrizCanal); //A)
+    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); //A)
 
     calculaSucSimul(probSucSimul,fuente,matrizCanal);    //B)
 
@@ -167,6 +203,8 @@ int main(int argc, char argv[]) {
     printf("H(A,B) = %f\n",entropiaDeB + equivoc_AB);
     entropiaPosteriori_A(matrizPosteriori,0);
     entropiaPosteriori_A(matrizPosteriori,1);
+   
+    generaMensajes(matMensajes,N,M,fuente);
     return 0;
 }
 
