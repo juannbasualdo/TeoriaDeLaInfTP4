@@ -130,9 +130,10 @@ void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
    printf("H(A/b = %d) = %f\n",num,suma);
 }
 
-void generaMensajes(float matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fuente[]) {
 
-   int    i, j;
+void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fuente[]) {
+
+   int    i, j, corte;
    double random_value;
    int    random_number;
 
@@ -140,24 +141,107 @@ void generaMensajes(float matMensajes[MAX_MENS][MAX_MENS], int N, int M, float f
    srand(time(NULL));
 
    //dejo la primer fila libre para bits de LRC
+   j = 0;
+   while ( j <= M) {
+      matMensajes[0][j] = -1;
+      j++;
+   }
+
+   i = 0;
+   while (i <= N) {
+      matMensajes[i][M] = -1;
+      i++;
+   }
+
    for ( i = 1 ; i <= N ; i++ )
       for ( j = 0 ; j < M ; j++ ) {
-
          // Generar un número aleatorio entre 0 y RAND_MAX
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
           random_value = (double)random_number / RAND_MAX;
-         // Imprimir el resultado
-         printf("Número aleatorio entre 0 y 1: %lf\n", random_value);
+          printf("Valor aleatorio: %f\n",random_value);
 
          if (random_value >= 0 && random_value <= fuente[0])
             matMensajes[i][j] = 0;
          else
             matMensajes[i][j] = 1;
-      }      
+      }   
+   
+   printf("\n");
+   printf("Simulacion del envio de %d mensajes aleatorios de longitud %d:\n",N,M);
+
+   for (i = 1 ; i <= N ; i ++ ) {
+      for ( j = 0 ; j < M ; j++ )
+         printf("%d  ",matMensajes[i][j]);
+      printf("\n");
+   }   
+
 }
 
-void paridadCruzada(float matMensajes[MAX_MENS][MAX_MENS]) {
+void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
+   int resultadoAnterior;
+   int i, j, aux;
+   int bitVRC, bitLRC;
+   
+   //Paridad vertical(VRC):
+   for ( j = 0 ; j < M ; j ++) {
+      resultadoAnterior = matMensajes[N][j] ^ matMensajes[N - 1][j];
+      for ( i = N - 2 ; i > 0 ; i-- ) { //Hace el XOR entre cada uno de los elementos de cada columna
+         aux = resultadoAnterior;
+         resultadoAnterior = matMensajes[i][j] ^ aux;
+      }
+      if (resultadoAnterior == 1)
+         matMensajes[0][j] = 1;
+      else
+         matMensajes[0][j] = 0;        
+   }
+
+   //Paridad longitudinal(LRC):
+   for ( i = 1 ; i <= N ; i ++) {
+      resultadoAnterior = matMensajes[i][0] ^ matMensajes[i][1];
+      for ( j =  2 ; j < M ; j++ ) { //Hace el XOR entre cada uno de los elementos de cada fila
+         aux = resultadoAnterior;
+         resultadoAnterior = matMensajes[i][j] ^ aux;
+      }
+      if (resultadoAnterior == 1)
+         matMensajes[i][M] = 1;
+      else
+         matMensajes[i][M] = 0;        
+   }
+
+   //XOR entre los bits de la primer fila (resultantes de VRC):
+   j = 0;
+   resultadoAnterior = matMensajes[0][0] ^ matMensajes[0][1];
+   while( j < M ) {
+      aux = resultadoAnterior;
+      resultadoAnterior = matMensajes[i][j] ^ aux;
+      j++;
+   }
+   bitVRC = resultadoAnterior;
+
+   //XOR entre los bits de la ultima columna (resultantes de LRC):
+   i = N - 2;
+   resultadoAnterior = matMensajes[N][M] ^ matMensajes[N - 1][M];
+   while( i > 0 ) {
+      aux = resultadoAnterior;
+      resultadoAnterior = matMensajes[i][M] ^ aux;
+      i--;
+   }
+   bitLRC = resultadoAnterior;
+
+   if (bitVRC == bitLRC)
+      matMensajes[0][M] = bitVRC;
+
+
+   printf("\n");
+   printf("Matriz resultante de aplicar el metodo de paridad cruzada:\n");
+   for (i = 0 ; i <= N ; i ++ ) {
+      for ( j = 0 ; j <= M ; j++ )
+         printf("%d  ",matMensajes[i][j]);
+      printf("\n");
+   }   
+   
+       
 
 }
 
@@ -186,7 +270,7 @@ int main() {
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
     float equivoc_AB, entropiaDeA, entropiaDeB;
-    float matMensajes[N][M];
+    int matMensajes[N][M];
 
     //A)
     leerArchivo("tp4_sample0.txt", fuente, matrizCanal); 
@@ -212,8 +296,10 @@ int main() {
     entropiaPosteriori_A(matrizPosteriori,1);
    
     //C)
-    generaMensajes(matMensajes,N,M,fuente);
-
+    generaMensajes(matMensajes,2,2,fuente);
+   
+   //D)
+   paridadCruzada(matMensajes,2,2);
     return 0;
 }
 
