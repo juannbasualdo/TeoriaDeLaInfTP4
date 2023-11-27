@@ -109,7 +109,7 @@ void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MA
          if (matrizPosteriori[i][j] != 0)
             *equivoc_AB += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
 
-   printf("La equivocacion del canal es H(A/B) = %f bits\n",*equivoc_AB);      
+         
 }
 
 
@@ -148,25 +148,30 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
       j++;
    }
 
+   //dejo la primer fila libre para bits de VRC 
    i = 0;
    while (i <= N) {
       matMensajes[i][M] = -1;
       i++;
    }
 
-   for ( i = 1 ; i <= N ; i++ )
+   printf("\n");
+   for ( i = 1 ; i <= N ; i++ ) {
       for ( j = 0 ; j < M ; j++ ) {
          // Generar un número aleatorio entre 0 y RAND_MAX
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
           random_value = (double)random_number / RAND_MAX;
-          printf("Valor aleatorio: %f\n",random_value);
+          printf("Valor aleatorio [%d][%d]: %f      ",i,j,random_value);
 
          if (random_value >= 0 && random_value <= fuente[0])
             matMensajes[i][j] = 0;
          else
             matMensajes[i][j] = 1;
-      }   
+            
+      }  
+      printf("\n");
+   }    
    
    printf("\n");
    printf("Simulacion del envio de %d mensajes aleatorios de longitud %d:\n",N,M);
@@ -232,8 +237,10 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
 
    if (bitVRC == bitLRC) {
       matMensajes[0][M] = bitVRC;
-      printf("Los bits coinciden\n");
+      printf("Los bits coinciden (VRC y LRC)\n");
    }
+   else
+      printf("Los bits no coinciden\n");
 
    printf("\n");
    printf("Matriz resultante de aplicar el metodo de paridad cruzada:\n");
@@ -260,14 +267,15 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
          printf("%f ",matrizCanal[i][j]);
       printf("\n");
    }      
+   printf("\n");
 
-   for ( i = 0 ; i <= N ; i++ )
+   for ( i = 0 ; i <= N ; i++ ) {
       for ( j = 0 ; j <= M ; j++ ) {
          // Generar un número aleatorio entre 0 y RAND_MAX
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
           random_value = (double)random_number / RAND_MAX;
-          printf("Valor aleatorio: %f\n",random_value);
+          printf("Valor aleatorio [%d][%d]: %f     ",i,j,random_value);
 
          if (matMensajes[i][j] == 0)
             if (random_value <= matrizCanal[0][0])
@@ -278,15 +286,67 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
             if (random_value <= matrizCanal[1][0])
                matMensajes2[i][j] = 0;
             else
-               matMensajes2[i][j] = 1;
+               matMensajes2[i][j] = 1;      
       }
+      printf("\n");
+   }
 
-   printf("Matriz 2:\n");
+   printf("\nMatriz 2:\n");
    for (i = 0 ; i <= N ; i ++ ) {
       for ( j = 0 ; j <= M ; j++ )
-         printf("%d  ",matMensajes[i][j]);
+         printf("%d  ",matMensajes2[i][j]);
       printf("\n");     
    }
+   printf("\n");
+}
+
+void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
+   int i, j, resultadoAnterior, aux;
+   int matErrores[MAX_LONG][MAX_MENS];
+   //int vecFila[N] = {0}, vecCol[N]={0};
+   
+   //primero hago el XOR entre los bits de cada fila
+   //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las filas
+   for ( i = 0 ; i <= N ; i++ ) {
+      resultadoAnterior = matMensajes2[i][0] ^ matMensajes2[i][1];
+      for ( j = 2 ; j <= M ; j++ ) {
+         aux = resultadoAnterior;
+         resultadoAnterior = aux ^ matMensajes2[i][j];   
+      }
+      if (resultadoAnterior == 1) {
+         printf("Error detectado en la fila: %d\n",i);
+         for ( j = 0 ; j <= M ; j++ )
+            matErrores[i][j] = 1;   
+      }
+      else 
+         for ( j = 0 ; j <= M ; j++ )
+            matErrores[i][j] = 0;   
+   }   
+
+   //hago el XOR entre los bits de cada columna
+   //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las columnas
+   for ( j = 0 ; j <= M ; j++ ) {
+      resultadoAnterior = matMensajes2[0][j] ^ matMensajes2[1][j];
+      for ( i = 2 ; i <= N ; i++ ) {
+         aux = resultadoAnterior;
+         resultadoAnterior = aux ^ matMensajes2[i][j];   
+      }
+      if (resultadoAnterior == 1) {
+         printf("Error detectado en la columna: %d\n",j);
+         for ( i = 0 ; i <= N ; i++ )
+            matErrores[i][j] = 1;
+      } 
+       
+      else
+         for ( i = 0 ; i <= N ; i++ )
+            matErrores[i][j] = 0;
+          
+   }   
+            
+   for ( i = 0 ; i <= N ; i++ )
+      for ( j = 0 ; j <= M ; j++ )
+         if (matErrores[i][j] == 1)
+            printf("Error en el bit ubicado en la fila %d y columna %d\n",i,j);         
 }
 
 
@@ -313,7 +373,7 @@ int main() {
     float probB[MAX_COLS]; //probabilidad de que salga 0 y 1 sin saber que entro
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
-    float equivoc_AB, entropiaDeA, entropiaDeB;
+    float equivoc_AB, entropiaDeA = 0, entropiaDeB = 0;
     int   matMensajes[N+1][M+1];
     int   matMensajes2[N+1][M+1];
 
@@ -332,6 +392,8 @@ int main() {
     
     calculoDeEntropiaDeX(probB,&entropiaDeB);
     
+    printf("La equivocacion del canal es H(A/B) = %f bits\n",equivoc_AB);
+    printf("H(B/A) = %f bits\n",entropiaDeB - (entropiaDeA - equivoc_AB));
     printf("La informacion mutua del canal es I(A,B) = %f bits\n",entropiaDeA - equivoc_AB);
     printf("\n---Entropias del canal:---\n");
     printf("H(A)   = %f\n",entropiaDeA);
@@ -341,14 +403,15 @@ int main() {
     entropiaPosteriori_A(matrizPosteriori,1);
    
     //C)
-    generaMensajes(matMensajes,2,2,fuente);
+    //generaMensajes(matMensajes,10,10,fuente);
    
     //D)
     if (estaP)
-       paridadCruzada(matMensajes,2,2);
+      // paridadCruzada(matMensajes,10,10);
    
     //E)
-    generaMat2(matrizCanal,matMensajes,matMensajes2,2,2);
+    //generaMat2(matrizCanal,matMensajes,matMensajes2,10,10);
+    //analiza(matMensajes2,10,10);
 
     return 0;
 }
