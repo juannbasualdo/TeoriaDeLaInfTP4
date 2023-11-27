@@ -13,6 +13,7 @@
 //A)
 int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[MAX_ROWS][MAX_COLS]) {
 
+    int i, j;
     FILE *archivo = fopen(nombreArchivo,"rt");
 
     if (archivo == NULL) {
@@ -39,6 +40,8 @@ int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[M
             }
         }
     }
+
+
     fclose(archivo);
     return 0;
 }
@@ -148,7 +151,7 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
       j++;
    }
 
-   //dejo la primer fila libre para bits de VRC 
+   //dejo la ultim columna libre para bits de VRC 
    i = 0;
    while (i <= N) {
       matMensajes[i][M] = -1;
@@ -356,16 +359,16 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
 }
 
 
-int main(int argc, char argv[]) {
+int main(int argc, char *argv[]) {
 
     char *nombre_archivo = argv[1]; 
     int  N, M;
     int estaP = 1;
    
-    N = atoi(&argv[2]);
-    M = atoi(&argv[3]);
+    N = atoi(argv[2]);
+    M = atoi(argv[3]);
     if (argc == 5)
-       if (!strcmp(&argv[4],"-p"))
+       if (!strcmp(argv[4],"-p"))
           estaP = 1;
     
 
@@ -406,15 +409,15 @@ int main(int argc, char argv[]) {
     entropiaPosteriori_A(matrizPosteriori,1);
    
     //C)
-    generaMensajes(matMensajes,2,2,fuente);
+    generaMensajes(matMensajes,N,M,fuente);
    
     //D)
     if (estaP)
-       paridadCruzada(matMensajes,2,2);
+       paridadCruzada(matMensajes,N,M);
    
     //E)
-    generaMat2(matrizCanal,matMensajes,matMensajes2,2,2);
-    analiza(matMensajes2,2,2);
+    generaMat2(matrizCanal,matMensajes,matMensajes2,N,M);
+    analiza(matMensajes2,N,M);
 
     return 0;
 }
