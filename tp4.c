@@ -253,8 +253,6 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_LONG], int N, int M) {
       printf("\n");
    }   
    
-       
-
 }
 
 
@@ -306,7 +304,6 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    int i, j, resultadoAnterior, aux, cantMenCorrect = 0;
    int matErrores[MAX_LONG][MAX_MENS];
-   //int vecFila[N] = {0}, vecCol[N]={0};
    
    //primero hago el XOR entre los bits de cada fila
    //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las filas
@@ -363,8 +360,8 @@ int main(int argc, char *argv[]) {
 
     char *nombre_archivo = argv[1]; 
     int  N, M;
-    int estaP = 1;
-   
+    int estaP;
+
     N = atoi(argv[2]);
     M = atoi(argv[3]);
     if (argc == 5)
