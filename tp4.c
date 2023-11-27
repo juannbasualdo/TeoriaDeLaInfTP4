@@ -10,8 +10,6 @@
 #define MAX_MENS 40
 
 
-
-
 //A)
 int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[MAX_ROWS][MAX_COLS]) {
 
@@ -136,7 +134,7 @@ void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
 
 void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fuente[]) {
 
-   int    i, j, corte;
+   int    i, j;
    double random_value;
    int    random_number;
 
@@ -250,6 +248,48 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
 }
 
 
+void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
+
+   int i, j;
+   double random_value;
+   int    random_number;
+
+   printf("\nMatriz del canal:\n");
+   for ( i = 0 ; i < 2 ; i++ ) {
+      for ( j = 0 ; j < 2 ; j++ )
+         printf("%d ",matrizCanal[i][j]);
+      printf("\n");
+   }      
+
+   for ( i = 0 ; i <= N ; i++ )
+      for ( j = 0 ; j <= M ; j++ ) {
+         // Generar un número aleatorio entre 0 y RAND_MAX
+         random_number = rand();
+         // Convertir el número a un valor entre 0 y 1
+          random_value = (double)random_number / RAND_MAX;
+          printf("Valor aleatorio: %f\n",random_value);
+
+         if (matMensajes[i][j] == 0)
+            if (random_value <= matrizCanal[0][0])
+               matMensajes2[i][j] = 0;
+            else
+               matMensajes2[i][j] = 1;   
+         else
+            if (random_value <= matrizCanal[1][0])
+               matMensajes2[i][j] = 0;
+            else
+               matMensajes2[i][j] = 1;
+      }
+
+   printf("Matriz 2:\n");
+   for (i = 0 ; i <= N ; i ++ ) {
+      for ( j = 0 ; j <= M ; j++ )
+         printf("%d  ",matMensajes[i][j]);
+      printf("\n");     
+   }
+}
+
+
 int main() {
 
     //int argc, char argv[]
@@ -257,7 +297,7 @@ int main() {
     //char nombre_archivo; 
     //strcpy(nombre_archivo,);
     int  N, M;
-    int estaP = 0;
+    int estaP = 1;
     /*
     
     N = atoi(&argv[2]);
@@ -274,10 +314,11 @@ int main() {
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
     float equivoc_AB, entropiaDeA, entropiaDeB;
-    int matMensajes[N][M];
+    int   matMensajes[N+1][M+1];
+    int   matMensajes2[N+1][M+1];
 
     //A)
-    leerArchivo("tp4_sample6.txt", fuente, matrizCanal); 
+    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); 
 
     //B)
     calculaSucSimul(probSucSimul,fuente,matrizCanal);    
@@ -305,7 +346,9 @@ int main() {
     //D)
     if (estaP)
        paridadCruzada(matMensajes,2,2);
-
+   
+    //E)
+    generaMat2(matrizCanal,matMensajes,matMensajes2,2,2);
 
     return 0;
 }
