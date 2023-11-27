@@ -187,7 +187,7 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
 
 }
 
-void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
+void paridadCruzada(int matMensajes[MAX_MENS][MAX_LONG], int N, int M) {
    int resultadoAnterior;
    int i, j, aux;
    int bitVRC, bitLRC;
@@ -219,11 +219,11 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
    }
 
    //XOR entre los bits de la primer fila (resultantes de VRC):
-   j = 0;
+   j = 2;
    resultadoAnterior = matMensajes[0][0] ^ matMensajes[0][1];
    while( j < M ) {
       aux = resultadoAnterior;
-      resultadoAnterior = matMensajes[i][j] ^ aux;
+      resultadoAnterior = matMensajes[0][j] ^ aux;
       j++;
    }
    bitVRC = resultadoAnterior;
