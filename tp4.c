@@ -356,22 +356,18 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
 }
 
 
-int main() {
+int main(int argc, char argv[]) {
 
-    //int argc, char argv[]
-    //char nombre_archivo = argv[1];
-    //char nombre_archivo; 
-    //strcpy(nombre_archivo,);
+    char *nombre_archivo = argv[1]; 
     int  N, M;
     int estaP = 1;
-    /*
-    
+   
     N = atoi(&argv[2]);
     M = atoi(&argv[3]);
     if (argc == 5)
        if (!strcmp(&argv[4],"-p"))
           estaP = 1;
-    */
+    
 
     float fuente[MAX_COLS]; //prob de que entre un 0 y de que entre un 1
     float matrizCanal[MAX_ROWS][MAX_COLS];
@@ -384,7 +380,7 @@ int main() {
     int   matMensajes2[N+1][M+1];
 
     //A)
-    leerArchivo("tp4_sample0.txt", fuente, matrizCanal); 
+    leerArchivo(nombre_archivo, fuente, matrizCanal); 
 
     //B)
     calculaSucSimul(probSucSimul,fuente,matrizCanal);    
@@ -398,9 +394,10 @@ int main() {
     
     calculoDeEntropiaDeX(probB,&entropiaDeB);
     
-    printf("La equivocacion del canal es H(A/B) = %f bits\n",equivoc_AB);
+    printf("H(A/B) = %f bits\n",equivoc_AB);
     printf("H(B/A) = %f bits\n",entropiaDeB - (entropiaDeA - equivoc_AB));
-    printf("La informacion mutua del canal es I(A,B) = %f bits\n",entropiaDeA - equivoc_AB);
+    printf("I(A,B) = %f bits\n",abs(entropiaDeA - equivoc_AB));
+    printf("I(B,A) = %f bits\n",abs(entropiaDeA - equivoc_AB));
     printf("\n---Entropias del canal:---\n");
     printf("H(A)   = %f\n",entropiaDeA);
     printf("H(B)   = %f\n",entropiaDeB);
@@ -409,15 +406,15 @@ int main() {
     entropiaPosteriori_A(matrizPosteriori,1);
    
     //C)
-    generaMensajes(matMensajes,10,10,fuente);
+    generaMensajes(matMensajes,2,2,fuente);
    
     //D)
     if (estaP)
-       paridadCruzada(matMensajes,10,10);
+       paridadCruzada(matMensajes,2,2);
    
     //E)
-    generaMat2(matrizCanal,matMensajes,matMensajes2,10,10);
-    analiza(matMensajes2,10,10);
+    generaMat2(matrizCanal,matMensajes,matMensajes2,2,2);
+    analiza(matMensajes2,2,2);
 
     return 0;
 }
