@@ -257,7 +257,7 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
    printf("\nMatriz del canal:\n");
    for ( i = 0 ; i < 2 ; i++ ) {
       for ( j = 0 ; j < 2 ; j++ )
-         printf("%d ",matrizCanal[i][j]);
+         printf("%f ",matrizCanal[i][j]);
       printf("\n");
    }      
 
