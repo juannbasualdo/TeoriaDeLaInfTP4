@@ -301,7 +301,7 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
 }
 
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
-   int i, j, resultadoAnterior, aux;
+   int i, j, resultadoAnterior, aux, cantMenCorrect = 0;
    int matErrores[MAX_LONG][MAX_MENS];
    //int vecFila[N] = {0}, vecCol[N]={0};
    
@@ -318,9 +318,12 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
          for ( j = 0 ; j <= M ; j++ )
             matErrores[i][j] = 1;   
       }
-      else 
+      else {
          for ( j = 0 ; j <= M ; j++ )
-            matErrores[i][j] = 0;   
+            matErrores[i][j] = 0;
+         if (i != 0) //la primer fila tiene bits de paridad   
+            cantMenCorrect++;   
+      }         
    }   
 
    //hago el XOR entre los bits de cada columna
@@ -346,7 +349,10 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    for ( i = 0 ; i <= N ; i++ )
       for ( j = 0 ; j <= M ; j++ )
          if (matErrores[i][j] == 1)
-            printf("Error en el bit ubicado en la fila %d y columna %d\n",i,j);         
+            printf("Error en el bit ubicado en la fila %d y columna %d\n",i,j); 
+
+   printf("La cantidad de mensajes enviados correctamente son: %d (o hay un numero par de errores en cada fila contada como correcta)\n",cantMenCorrect);
+   printf("La cantidad de mensajes enviados incorrectamente son: %d\n",N-cantMenCorrect);        
 }
 
 
@@ -403,15 +409,15 @@ int main() {
     entropiaPosteriori_A(matrizPosteriori,1);
    
     //C)
-    //generaMensajes(matMensajes,10,10,fuente);
+    generaMensajes(matMensajes,10,10,fuente);
    
     //D)
     if (estaP)
-      // paridadCruzada(matMensajes,10,10);
+       paridadCruzada(matMensajes,10,10);
    
     //E)
-    //generaMat2(matrizCanal,matMensajes,matMensajes2,10,10);
-    //analiza(matMensajes2,10,10);
+    generaMat2(matrizCanal,matMensajes,matMensajes2,10,10);
+    analiza(matMensajes2,10,10);
 
     return 0;
 }
