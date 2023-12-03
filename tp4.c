@@ -425,7 +425,7 @@ int main(int argc, char *argv[]) {
    
     //E)
     generaMat2(matrizCanal,matMensajes,matMensajes2,N,M);
-    analiza(matMensajes2,2,2);
+    analiza(matMensajes2,N,M);
 
     return 0;
 }
