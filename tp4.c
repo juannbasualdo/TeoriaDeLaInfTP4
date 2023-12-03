@@ -13,7 +13,6 @@
 //A)
 int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[MAX_ROWS][MAX_COLS]) {
 
-    int i, j;
     FILE *archivo = fopen(nombreArchivo,"rt");
 
     if (archivo == NULL) {
@@ -40,8 +39,6 @@ int leerArchivo(char *nombreArchivo, float fuente[MAX_COLS], float matrizCanal[M
             }
         }
     }
-
-
     fclose(archivo);
     return 0;
 }
@@ -115,7 +112,6 @@ void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MA
          
 }
 
-
 void calculoDeEntropiaDeX(float vector[], float *entropiaDeX) {
    int i;
 
@@ -134,7 +130,6 @@ void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
    printf("H(A/b = %d) = %f\n",num,suma);
 }
 
-
 void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fuente[]) {
 
    int    i, j;
@@ -151,7 +146,7 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
       j++;
    }
 
-   //dejo la ultim columna libre para bits de VRC 
+   //dejo la primer fila libre para bits de VRC 
    i = 0;
    while (i <= N) {
       matMensajes[i][M] = -1;
@@ -187,7 +182,7 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
 
 }
 
-void paridadCruzada(int matMensajes[MAX_MENS][MAX_LONG], int N, int M) {
+void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
    int resultadoAnterior;
    int i, j, aux;
    int bitVRC, bitLRC;
@@ -253,6 +248,8 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_LONG], int N, int M) {
       printf("\n");
    }   
    
+       
+
 }
 
 
@@ -304,6 +301,7 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    int i, j, resultadoAnterior, aux, cantMenCorrect = 0;
    int matErrores[MAX_LONG][MAX_MENS];
+   //int vecFila[N] = {0}, vecCol[N]={0};
    
    //primero hago el XOR entre los bits de cada fila
    //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las filas
@@ -360,8 +358,8 @@ int main(int argc, char *argv[]) {
 
     char *nombre_archivo = argv[1]; 
     int  N, M;
-    int estaP;
-
+    int estaP = 0;
+   
     N = atoi(argv[2]);
     M = atoi(argv[3]);
     if (argc == 5)
@@ -376,8 +374,10 @@ int main(int argc, char *argv[]) {
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
     float equivoc_AB, entropiaDeA = 0, entropiaDeB = 0;
-    int   matMensajes[N+1][M+1];
-    int   matMensajes2[N+1][M+1];
+    int matMensajes[MAX_LONG][MAX_MENS];
+    int matMensajes2[MAX_LONG][MAX_MENS];
+   
+ 
 
     //A)
     leerArchivo(nombre_archivo, fuente, matrizCanal); 
@@ -390,14 +390,25 @@ int main(int argc, char *argv[]) {
     calculoMatrizPosteriori(matrizPosteriori,fuente,matrizCanal,probB);
 
     equivocacionCanal(probSucSimul,matrizPosteriori,&equivoc_AB);
+    
     calculoDeEntropiaDeX(fuente,&entropiaDeA);
     
     calculoDeEntropiaDeX(probB,&entropiaDeB);
     
     printf("H(A/B) = %f bits\n",equivoc_AB);
     printf("H(B/A) = %f bits\n",entropiaDeB - (entropiaDeA - equivoc_AB));
-    printf("I(A,B) = %f bits\n",abs(entropiaDeA - equivoc_AB));
-    printf("I(B,A) = %f bits\n",abs(entropiaDeA - equivoc_AB));
+
+      //correccion -> eliminar funcion
+    if (entropiaDeA - equivoc_AB > 0){
+      printf("I(A,B) = %f bits\n",entropiaDeA - equivoc_AB);
+      printf("I(B,A) = %f bits\n",entropiaDeA - equivoc_AB);
+    }
+    else{
+      printf("I(A,B) = %f bits\n",equivoc_AB - entropiaDeA);
+      printf("I(B,A) = %f bits\n",equivoc_AB - entropiaDeA);
+      
+    }
+
     printf("\n---Entropias del canal:---\n");
     printf("H(A)   = %f\n",entropiaDeA);
     printf("H(B)   = %f\n",entropiaDeB);
@@ -414,7 +425,7 @@ int main(int argc, char *argv[]) {
    
     //E)
     generaMat2(matrizCanal,matMensajes,matMensajes2,N,M);
-    analiza(matMensajes2,N,M);
+    analiza(matMensajes2,2,2);
 
     return 0;
 }
