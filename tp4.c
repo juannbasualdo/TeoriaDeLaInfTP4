@@ -335,8 +335,14 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       }
       if (resultadoAnterior == 1) {
          printf("Error detectado en la columna: %d\n",j);
-         for ( i = 0 ; i <= N ; i++ )
+         for ( i = 0 ; i <= N ; i++ ) {
             matErrores[i][j]++;
+            if (matErrores[i][j] == 2) {
+               bitsCol[j]++;
+               bitsFil[i]++;
+            }
+
+         }   
       } 
           
    }   
@@ -353,12 +359,25 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       printf("\n");
    }      
 
+   printf("\n");
    for ( i = 0 ; i <= N ; i++ ) 
       for ( j = 0 ; j <= M ; j++ )
          if (matErrores[i][j] == 2) {
             printf("Error en el bit de la fila: %d y columna: %d \n",i,j);
 
          }   
+
+   printf("Vector errores por fila:\n");
+   for ( i = 0 ; i <= N ; i++ ) {
+      printf("[%d]: %d   ",i,bitsFil[i]);
+   } 
+
+   printf("\n");
+
+   printf("Vector errores por columna:\n");
+   for ( j = 0 ; j <= M ; j++ ) {
+      printf("[%d]: %d   ",j,bitsCol[j]);
+   }     
       
    //si la cantidad de bits 
          
