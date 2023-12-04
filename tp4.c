@@ -146,7 +146,7 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
       j++;
    }
 
-   //dejo la primer fila libre para bits de VRC 
+   //dejo la utima columna libre para bits de VRC 
    i = 0;
    while (i <= N) {
       matMensajes[i][M] = -1;
@@ -273,7 +273,7 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
           random_value = (double)random_number / RAND_MAX;
-          printf("Valor aleatorio [%d][%d]: %f     ",i,j,random_value);
+          //printf("Valor aleatorio [%d][%d]: %f     ",i,j,random_value);
 
          if (matMensajes[i][j] == 0)
             if (random_value <= matrizCanal[0][0])
@@ -286,7 +286,7 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
             else
                matMensajes2[i][j] = 1;      
       }
-      printf("\n");
+      //printf("\n");
    }
 
    printf("\nMatriz 2:\n");
@@ -300,7 +300,7 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
 
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    int i, j, resultadoAnterior, aux, cantMenCorrect = 0;
-   int matErrores[MAX_LONG][MAX_MENS];
+   int matErrores[MAX_LONG][MAX_MENS], bitsCol[MAX_MENS] = {0},bitsFil[MAX_LONG] = {0};
    //int vecFila[N] = {0}, vecCol[N]={0};
    
    //primero hago el XOR entre los bits de cada fila
@@ -319,8 +319,9 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       else {
          for ( j = 0 ; j <= M ; j++ )
             matErrores[i][j] = 0;
-         if (i != 0) //la primer fila tiene bits de paridad   
-            cantMenCorrect++;   
+         /*if (i != 0) //la primer fila tiene bits de paridad   
+            cantMenCorrect++;
+         */      
       }         
    }   
 
@@ -335,19 +336,32 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       if (resultadoAnterior == 1) {
          printf("Error detectado en la columna: %d\n",j);
          for ( i = 0 ; i <= N ; i++ )
-            matErrores[i][j] = 1;
+            matErrores[i][j]++;
       } 
-       
-      else
-         for ( i = 0 ; i <= N ; i++ )
-            matErrores[i][j] = 0;
           
    }   
-            
-   for ( i = 0 ; i <= N ; i++ )
-      for ( j = 0 ; j <= M ; j++ )
-         if (matErrores[i][j] == 1)
+
+   /*
+      if (matErrores[i][j] == 1)
             printf("Error en el bit ubicado en la fila %d y columna %d\n",i,j); 
+   */
+
+   printf("\nMatriz de errores: \n");         
+   for ( i = 0 ; i <= N ; i++ ) {
+      for ( j = 0 ; j <= M ; j++ )
+         printf("%d  ",matErrores[i][j]);
+      printf("\n");
+   }      
+
+   for ( i = 0 ; i <= N ; i++ ) 
+      for ( j = 0 ; j <= M ; j++ )
+         if (matErrores[i][j] == 2) {
+            printf("Error en el bit de la fila: %d y columna: %d \n",i,j);
+
+         }   
+      
+   //si la cantidad de bits 
+         
 
    printf("La cantidad de mensajes enviados correctamente son: %d (o hay un numero par de errores en cada fila contada como correcta)\n",cantMenCorrect);
    printf("La cantidad de mensajes enviados incorrectamente son: %d\n",N-cantMenCorrect);        
