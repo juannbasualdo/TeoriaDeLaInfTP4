@@ -253,7 +253,7 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
 }
 
 
-void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
+void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
 
    int i, j;
    double random_value;
@@ -299,9 +299,8 @@ void generaMat2(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG]
 }
 
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
-   int i, j, resultadoAnterior, aux, cantMenCorrect = 0;
-   int matErrores[MAX_LONG][MAX_MENS], bitsCol[MAX_MENS] = {0},bitsFil[MAX_LONG] = {0};
-   //int vecFila[N] = {0}, vecCol[N]={0};
+   int i, j, resultadoAnterior, aux;
+   int matErrores[MAX_LONG][MAX_MENS], bitsCol[MAX_MENS] = {0}, bitsFil[MAX_LONG] = {0};
    
    //primero hago el XOR entre los bits de cada fila
    //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las filas
@@ -312,17 +311,14 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
          resultadoAnterior = aux ^ matMensajes2[i][j];   
       }
       if (resultadoAnterior == 1) {
-         printf("Error detectado en la fila: %d\n",i);
-         for ( j = 0 ; j <= M ; j++ )
+         printf("Bits sospechosos -> fila: %d\n",i);
+         for ( j = 0 ; j <= M ; j++ ) 
             matErrores[i][j] = 1;   
+            
       }
-      else {
+      else 
          for ( j = 0 ; j <= M ; j++ )
-            matErrores[i][j] = 0;
-         /*if (i != 0) //la primer fila tiene bits de paridad   
-            cantMenCorrect++;
-         */      
-      }         
+            matErrores[i][j] = 0;          
    }   
 
    //hago el XOR entre los bits de cada columna
@@ -334,7 +330,7 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
          resultadoAnterior = aux ^ matMensajes2[i][j];   
       }
       if (resultadoAnterior == 1) {
-         printf("Error detectado en la columna: %d\n",j);
+         printf("Bits sospechosos -> columna: %d\n",j);
          for ( i = 0 ; i <= N ; i++ ) {
             matErrores[i][j]++;
             if (matErrores[i][j] == 2) {
@@ -347,10 +343,6 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
           
    }   
 
-   /*
-      if (matErrores[i][j] == 1)
-            printf("Error en el bit ubicado en la fila %d y columna %d\n",i,j); 
-   */
 
    printf("\nMatriz de errores: \n");         
    for ( i = 0 ; i <= N ; i++ ) {
@@ -359,13 +351,6 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       printf("\n");
    }      
 
-   printf("\n");
-   for ( i = 0 ; i <= N ; i++ ) 
-      for ( j = 0 ; j <= M ; j++ )
-         if (matErrores[i][j] == 2) {
-            printf("Error en el bit de la fila: %d y columna: %d \n",i,j);
-
-         }   
 
    printf("Vector errores por fila:\n");
    for ( i = 0 ; i <= N ; i++ ) {
@@ -378,12 +363,19 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    for ( j = 0 ; j <= M ; j++ ) {
       printf("[%d]: %d   ",j,bitsCol[j]);
    }     
-      
-   //si la cantidad de bits 
-         
+   printf("\n");
 
-   printf("La cantidad de mensajes enviados correctamente son: %d (o hay un numero par de errores en cada fila contada como correcta)\n",cantMenCorrect);
-   printf("La cantidad de mensajes enviados incorrectamente son: %d\n",N-cantMenCorrect);        
+  
+   for ( i = 0 ; i <= N ; i++ ) 
+      for ( j = 0 ; j <= M ; j++ )
+         if (matErrores[i][j] == 2) {
+            if (( bitsFil[i] % 2 != 0 ) && ( bitsCol[j] % 2 != 0 ) )
+               if (bitsFil[i] < 2 && bitsCol[j] < 2)
+                  printf("Bit erroneo en la fila: %d y columna: %d\n",i,j);
+         }   
+    printf("\n");
+   
+      
 }
 
 
@@ -457,7 +449,7 @@ int main(int argc, char *argv[]) {
        paridadCruzada(matMensajes,N,M);
    
     //E)
-    generaMat2(matrizCanal,matMensajes,matMensajes2,N,M);
+    enviaMensajes(matrizCanal,matMensajes,matMensajes2,N,M);
     analiza(matMensajes2,N,M);
 
     return 0;
