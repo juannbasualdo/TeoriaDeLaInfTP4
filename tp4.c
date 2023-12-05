@@ -139,28 +139,15 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
    // Establecer la semilla para la generación de números aleatorios
    srand(time(NULL));
 
-   //dejo la primer fila libre para bits de LRC
-   j = 0;
-   while ( j <= M) {
-      matMensajes[0][j] = -1;
-      j++;
-   }
-
-   //dejo la utima columna libre para bits de VRC 
-   i = 0;
-   while (i <= N) {
-      matMensajes[i][M] = -1;
-      i++;
-   }
 
    printf("\n");
-   for ( i = 1 ; i <= N ; i++ ) {
+   for ( i = 0 ; i < N ; i++ ) {
       for ( j = 0 ; j < M ; j++ ) {
          // Generar un número aleatorio entre 0 y RAND_MAX
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
           random_value = (double)random_number / RAND_MAX;
-          printf("Valor aleatorio [%d][%d]: %f      ",i,j,random_value);
+          //printf("Valor aleatorio [%d][%d]: %f      ",i,j,random_value);
 
          if (random_value >= 0 && random_value <= fuente[0])
             matMensajes[i][j] = 0;
@@ -174,7 +161,7 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
    printf("\n");
    printf("Simulacion del envio de %d mensajes aleatorios de longitud %d:\n",N,M);
 
-   for (i = 1 ; i <= N ; i ++ ) {
+   for (i = 0 ; i < N ; i ++ ) {
       for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matMensajes[i][j]);
       printf("\n");
@@ -182,59 +169,60 @@ void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fue
 
 }
 
-void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
+void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int *N, int *M) {
    int resultadoAnterior;
    int i, j, aux;
    int bitVRC, bitLRC;
-   
+
+ 
    //Paridad vertical(VRC):
-   for ( j = 0 ; j < M ; j ++) {
-      resultadoAnterior = matMensajes[N][j] ^ matMensajes[N - 1][j];
-      for ( i = N - 2 ; i > 0 ; i-- ) { //Hace el XOR entre cada uno de los elementos de cada columna
+   for ( j = 0 ; j < *M ; j ++) {
+      resultadoAnterior = matMensajes[*N - 1][j] ^ matMensajes[*N - 2][j];
+      for ( i = (*N - 3) ; i >= 0 ; i-- ) { //Hace el XOR entre cada uno de los elementos de cada columna
          aux = resultadoAnterior;
          resultadoAnterior = matMensajes[i][j] ^ aux;
       }
       if (resultadoAnterior == 1)
-         matMensajes[0][j] = 1;
+         matMensajes[*N][j] = 1;
       else
-         matMensajes[0][j] = 0;        
+         matMensajes[*N][j] = 0;        
    }
 
    //Paridad longitudinal(LRC):
-   for ( i = 1 ; i <= N ; i ++) {
+   for ( i = 0 ; i < *N ; i ++) {
       resultadoAnterior = matMensajes[i][0] ^ matMensajes[i][1];
-      for ( j =  2 ; j < M ; j++ ) { //Hace el XOR entre cada uno de los elementos de cada fila
+      for ( j =  2 ; j < *M ; j++ ) { //Hace el XOR entre cada uno de los elementos de cada fila
          aux = resultadoAnterior;
          resultadoAnterior = matMensajes[i][j] ^ aux;
       }
       if (resultadoAnterior == 1)
-         matMensajes[i][M] = 1;
+         matMensajes[i][*M] = 1;
       else
-         matMensajes[i][M] = 0;        
+         matMensajes[i][*M] = 0;        
    }
 
-   //XOR entre los bits de la primer fila (resultantes de VRC):
+   //XOR entre los bits de la ultima fila (resultantes de VRC):
    j = 2;
-   resultadoAnterior = matMensajes[0][0] ^ matMensajes[0][1];
-   while( j < M ) {
+   resultadoAnterior = matMensajes[*N][0] ^ matMensajes[*N][1];
+   while( j < *M ) {
       aux = resultadoAnterior;
-      resultadoAnterior = matMensajes[0][j] ^ aux;
+      resultadoAnterior = matMensajes[*N][j] ^ aux;
       j++;
    }
    bitVRC = resultadoAnterior;
 
    //XOR entre los bits de la ultima columna (resultantes de LRC):
-   i = N - 2;
-   resultadoAnterior = matMensajes[N][M] ^ matMensajes[N - 1][M];
-   while( i > 0 ) {
+   i = *N - 3;
+   resultadoAnterior = matMensajes[*N - 1][*M] ^ matMensajes[*N - 2][*M];
+   while( i >= 0 ) {
       aux = resultadoAnterior;
-      resultadoAnterior = matMensajes[i][M] ^ aux;
+      resultadoAnterior = matMensajes[i][*M] ^ aux;
       i--;
    }
    bitLRC = resultadoAnterior;
 
    if (bitVRC == bitLRC) {
-      matMensajes[0][M] = bitVRC;
+      matMensajes[*N][*M] = bitVRC; //bit de paridad cruzada
       printf("Los bits coinciden (VRC y LRC)\n");
    }
    else
@@ -242,20 +230,21 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int N, int M) {
 
    printf("\n");
    printf("Matriz resultante de aplicar el metodo de paridad cruzada:\n");
-   for (i = 0 ; i <= N ; i ++ ) {
-      for ( j = 0 ; j <= M ; j++ )
+   for (i = 0 ; i <= *N ; i ++ ) {
+      for ( j = 0 ; j <= *M ; j++ )
          printf("%d  ",matMensajes[i][j]);
       printf("\n");
-   }   
-   
-       
+   }          
+
+   (*N)++;
+   (*M)++;
 
 }
 
 
 void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
 
-   int i, j;
+   int    i, j;
    double random_value;
    int    random_number;
 
@@ -267,8 +256,8 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
    }      
    printf("\n");
 
-   for ( i = 0 ; i <= N ; i++ ) {
-      for ( j = 0 ; j <= M ; j++ ) {
+   for ( i = 0 ; i < N ; i++ ) {
+      for ( j = 0 ; j < M ; j++ ) {
          // Generar un número aleatorio entre 0 y RAND_MAX
          random_number = rand();
          // Convertir el número a un valor entre 0 y 1
@@ -290,92 +279,113 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
    }
 
    printf("\nMatriz 2:\n");
-   for (i = 0 ; i <= N ; i ++ ) {
-      for ( j = 0 ; j <= M ; j++ )
+   for (i = 0 ; i < N ; i ++ ) {
+      for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matMensajes2[i][j]);
       printf("\n");     
    }
    printf("\n");
 }
 
+
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    int i, j, resultadoAnterior, aux;
-   int matErrores[MAX_LONG][MAX_MENS], bitsCol[MAX_MENS] = {0}, bitsFil[MAX_LONG] = {0};
+   int matErrores[MAX_LONG][MAX_MENS], cantErrores = 0, filaError, columnaError; 
+   
+   //bitsCol[MAX_MENS] = {0}, bitsFil[MAX_LONG] = {0};
    
    //primero hago el XOR entre los bits de cada fila
    //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las filas
-   for ( i = 0 ; i <= N ; i++ ) {
+   for ( i = 0 ; i < N ; i++ ) {
       resultadoAnterior = matMensajes2[i][0] ^ matMensajes2[i][1];
-      for ( j = 2 ; j <= M ; j++ ) {
+      for ( j = 2 ; j < M ; j++ ) {
          aux = resultadoAnterior;
          resultadoAnterior = aux ^ matMensajes2[i][j];   
       }
       if (resultadoAnterior == 1) {
-         printf("Bits sospechosos -> fila: %d\n",i);
-         for ( j = 0 ; j <= M ; j++ ) 
+         for ( j = 0 ; j < M ; j++ ) 
             matErrores[i][j] = 1;   
             
       }
       else 
-         for ( j = 0 ; j <= M ; j++ )
+         for ( j = 0 ; j < M ; j++ )
             matErrores[i][j] = 0;          
    }   
 
    //hago el XOR entre los bits de cada columna
    //si no hay errores (al menos no pares) deberia darme 0 el XOR de cada una de las columnas
-   for ( j = 0 ; j <= M ; j++ ) {
+   for ( j = 0 ; j < M ; j++ ) {
       resultadoAnterior = matMensajes2[0][j] ^ matMensajes2[1][j];
-      for ( i = 2 ; i <= N ; i++ ) {
+      for ( i = 2 ; i < N ; i++ ) {
          aux = resultadoAnterior;
          resultadoAnterior = aux ^ matMensajes2[i][j];   
       }
       if (resultadoAnterior == 1) {
-         printf("Bits sospechosos -> columna: %d\n",j);
-         for ( i = 0 ; i <= N ; i++ ) {
+         for ( i = 0 ; i < N ; i++ ) 
             matErrores[i][j]++;
-            if (matErrores[i][j] == 2) {
-               bitsCol[j]++;
-               bitsFil[i]++;
-            }
-
-         }   
-      } 
-          
-   }   
+      }      
+      else
+         for ( i = 0 ; i < N ; i++ ) {
+            matErrores[i][j] = 0;   
+           
+         } 
+   }       
+        
 
 
    printf("\nMatriz de errores: \n");         
-   for ( i = 0 ; i <= N ; i++ ) {
-      for ( j = 0 ; j <= M ; j++ )
+   for ( i = 0 ; i < N ; i++ ) {
+      for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matErrores[i][j]);
       printf("\n");
    }      
-
-
-   printf("Vector errores por fila:\n");
-   for ( i = 0 ; i <= N ; i++ ) {
-      printf("[%d]: %d   ",i,bitsFil[i]);
-   } 
-
-   printf("\n");
-
-   printf("Vector errores por columna:\n");
-   for ( j = 0 ; j <= M ; j++ ) {
-      printf("[%d]: %d   ",j,bitsCol[j]);
-   }     
-   printf("\n");
-
-  
-   for ( i = 0 ; i <= N ; i++ ) 
-      for ( j = 0 ; j <= M ; j++ )
-         if (matErrores[i][j] == 2) {
-            if (( bitsFil[i] % 2 != 0 ) && ( bitsCol[j] % 2 != 0 ) )
-               if (bitsFil[i] < 2 && bitsCol[j] < 2)
-                  printf("Bit erroneo en la fila: %d y columna: %d\n",i,j);
-         }   
-    printf("\n");
    
-      
+  
+   //N-1 y M-1 ya que no considero erroneos los bits de paridad cambiados
+   for ( i = 0 ; i < N - 1 ; i++ ) 
+      for ( j = 0 ; j < M - 1 ; j++ ) {
+         if ( matErrores[i][j] == 1 ) 
+            printf("Bit sospechoso en la fila: %d y columna: %d\n",i,j); 
+         else
+            if (matErrores[i][j] == 2) {
+               cantErrores++; 
+               filaError    = i;
+               columnaError = j;              
+            }   
+      }      
+   printf("\n"); 
+
+   if ( cantErrores < 2 ) {
+      printf("Bit erroneo en la fila: %d y la columna: %d\n",filaError,columnaError); 
+      printf("Al ser solo un error se puede corregir\n");
+   }
+   else
+      printf("Por existir mas de un error, no es posible su correccion, unicamente se informan sospechosos\n\n");
+   
+}
+
+
+void compara(int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
+   int i, j;
+
+   printf("Matriz 1:\n");
+   for ( i = 0 ; i < N - 1 ; i++ ) {
+      for ( j = 0 ; j < M - 1 ; j++ )
+         printf("%d  ",matMensajes[i][j]);
+      printf("\n");
+   }      
+
+   printf("\nMatriz 2:\n");
+   for ( i = 0 ; i < N - 1 ; i++ ) {
+      for ( j = 0 ; j < M - 1 ; j++ )
+         printf("%d  ",matMensajes2[i][j]);
+      printf("\n");
+   }   
+
+   for ( i = 0 ; i < N - 1 ; i++ )
+      for ( j = 0 ; j < M - 1 ; j++ )
+         if ( matMensajes[i][j] != matMensajes2[i][j] )
+            printf("Error en el bit de la fila: %d y columna: %d\n",i,j);
 }
 
 
@@ -399,8 +409,8 @@ int main(int argc, char *argv[]) {
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
     float equivoc_AB, entropiaDeA = 0, entropiaDeB = 0;
-    int matMensajes[MAX_LONG][MAX_MENS];
-    int matMensajes2[MAX_LONG][MAX_MENS];
+    int   matMensajes[MAX_LONG][MAX_MENS];
+    int   matMensajes2[MAX_LONG][MAX_MENS];
    
  
 
@@ -446,11 +456,14 @@ int main(int argc, char *argv[]) {
    
     //D)
     if (estaP)
-       paridadCruzada(matMensajes,N,M);
+       paridadCruzada(matMensajes,&N,&M);
    
     //E)
     enviaMensajes(matrizCanal,matMensajes,matMensajes2,N,M);
-    analiza(matMensajes2,N,M);
+    if (estaP)
+       analiza(matMensajes2,N,M);
+    
+    compara(matMensajes,matMensajes2,N,M);
 
     return 0;
 }
