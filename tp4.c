@@ -199,12 +199,7 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int *N, int *M) {
    }
    bitLRC = resultadoAnterior;
 
-   if (bitVRC == bitLRC) {
-      matMensajes[*N][*M] = bitVRC; //bit de paridad cruzada
-      printf("Los bits coinciden (VRC y LRC)\n");
-   }
-   else
-      printf("Los bits no coinciden\n");
+   
 
    printf("\n");
    printf("Matriz resultante de aplicar el metodo de paridad cruzada:\n");
@@ -213,6 +208,13 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int *N, int *M) {
          printf("%d  ",matMensajes[i][j]);
       printf("\n");
    }          
+
+   if (bitVRC == bitLRC) {
+      matMensajes[*N][*M] = bitVRC; //bit de paridad cruzada
+      printf("Los bits coinciden (VRC y LRC)\n");
+   }
+   else
+      printf("Los bits no coinciden\n");
 
    (*N)++;
    (*M)++;
@@ -273,7 +275,7 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
 
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    int i, j, resultadoAnterior, aux;
-   int matErrores[MAX_LONG][MAX_MENS], cantErrores = 0, filaError = 0, columnaError = 0; 
+   int matErrores[MAX_LONG][MAX_MENS], cantSospechosos = 0, filaError = 0, columnaError = 0; 
    
    //bitsCol[MAX_MENS] = {0}, bitsFil[MAX_LONG] = {0};
    
@@ -309,7 +311,7 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       }      
       else
          for ( i = 0 ; i < N ; i++ ) {
-            matErrores[i][j] = 0;   
+            matErrores[i][j];   
            
          } 
    }       
@@ -325,22 +327,21 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    
   
    //N-1 y M-1 ya que no considero erroneos los bits de paridad cambiados
-   for ( i = 0 ; i < N - 1 ; i++ ) 
+   for ( i = 0 ; i < N-1 ; i++ ) 
       for ( j = 0 ; j < M - 1 ; j++ ) {
-         if ( matErrores[i][j] == 1 ) 
-            printf("Bit sospechoso en la fila: %d y columna: %d\n",i,j); 
-         else
-            if (matErrores[i][j] == 2) {
-               cantErrores++; 
-               filaError    = i;
-               columnaError = j;              
-            }   
+         if ( matErrores[i][j] == 2 ) {
+            printf("Bit sospechoso en la fila: %d y columna: %d\n",i,j);
+            cantSospechosos++; 
+            filaError    = i;
+            columnaError = j;
+         }        
       }      
    printf("\n"); 
 
-   if ( cantErrores == 1 ) {
+
+   if ( cantSospechosos == 1 ) {
       printf("Bit erroneo en la fila: %d y la columna: %d\n",filaError,columnaError); 
-      printf("Al ser solo un error se puede corregir\n");
+      printf("Al ser solo un error se puede corregir\n\n");
    }
    else
       printf("Por existir mas de un error, no es posible su correccion, unicamente se informan sospechosos\n\n");
