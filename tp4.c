@@ -220,7 +220,7 @@ void paridadCruzada(int matMensajes[MAX_MENS][MAX_MENS], int *N, int *M) {
 }
 
 
-void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
+void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M, int estaP) {
 
    int    i, j;
    double random_value;
@@ -256,9 +256,14 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
       //printf("\n");
    }
 
+   if (estaP) {
+      N--;
+      M--;
+   }
+
    printf("\nMatriz 2:\n");
-   for (i = 0 ; i < N-1 ; i ++ ) {
-      for ( j = 0 ; j < M-1 ; j++ )
+   for (i = 0 ; i < N ; i ++ ) {
+      for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matMensajes2[i][j]);
       printf("\n");     
    }
@@ -349,21 +354,21 @@ void compara(int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX
    printf("--Comparacion bit a bit de ambas matrices--\n");
 
    printf("Matriz 1:\n");
-   for ( i = 0 ; i < N - 1 ; i++ ) {
-      for ( j = 0 ; j < M - 1 ; j++ )
+   for ( i = 0 ; i < N ; i++ ) {
+      for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matMensajes[i][j]);
       printf("\n");
    }      
 
    printf("\nMatriz 2 (paso a traves del canal):\n");
-   for ( i = 0 ; i < N - 1 ; i++ ) {
-      for ( j = 0 ; j < M - 1 ; j++ )
+   for ( i = 0 ; i < N ; i++ ) {
+      for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matMensajes2[i][j]);
       printf("\n");
    }   
 
-   for ( i = 0 ; i < N - 1 ; i++ )
-      for ( j = 0 ; j < M - 1 ; j++ )
+   for ( i = 0 ; i < N ; i++ )
+      for ( j = 0 ; j < M ; j++ )
          if ( matMensajes[i][j] != matMensajes2[i][j] ) {
             printf("Error en el bit de la fila: %d y columna: %d\n",i,j);
             errores++;
@@ -451,7 +456,11 @@ int main(int argc, char *argv[]) {
        paridadCruzada(matMensajes,&N,&M);
    
     //E)
-    enviaMensajes(matrizCanal,matMensajes,matMensajes2,N,M);
+    enviaMensajes(matrizCanal,matMensajes,matMensajes2,N,M,estaP);
+    if (estaP) {
+      N--;
+      M--;
+    }
     if (estaP)
        analiza(matMensajes2,N,M);
     
