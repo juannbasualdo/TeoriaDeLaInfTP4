@@ -258,18 +258,20 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
       //printf("\n");
    }
 
-   if (estaP) {
-      N--;
-      M--;
-   }
+   
 
-   printf("\nMatriz 2:\n");
+   printf("\nMatriz 2: (junto con los bits de paridad)\n");
    for (i = 0 ; i < N ; i ++ ) {
       for ( j = 0 ; j < M ; j++ )
          printf("%d  ",matMensajes2[i][j]);
       printf("\n");     
    }
    printf("\n");
+
+   if (estaP) {
+      N--;
+      M--;
+   }
 }
 
 
