@@ -437,9 +437,9 @@ int main(int argc, char *argv[]) {
     }
 
     printf("\n---Entropias del canal:---\n");
-    printf("H(A)   = %f\n",entropiaDeA);
-    printf("H(B)   = %f\n",entropiaDeB);
-    printf("H(A,B) = %f\n",entropiaDeB + equivoc_AB);
+    printf("H(A)   = %f bits\n",entropiaDeA);
+    printf("H(B)   = %f bits\n",entropiaDeB);
+    printf("H(A,B) = %f bits\n",entropiaDeB + equivoc_AB);
     entropiaPosteriori_A(matrizPosteriori,0);
     entropiaPosteriori_A(matrizPosteriori,1);
    
