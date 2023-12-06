@@ -326,9 +326,9 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    }      
    
   
-   //N-1 y M-1 ya que no considero erroneos los bits de paridad cambiados
-   for ( i = 0 ; i < N-1 ; i++ ) 
-      for ( j = 0 ; j < M - 1 ; j++ ) {
+   //no considero erroneos los bits de paridad cambiados
+   for ( i = 0 ; i < N ; i++ ) 
+      for ( j = 0 ; j < M ; j++ ) {
          if ( matErrores[i][j] == 2 ) {
             printf("Bit sospechoso en la fila: %d y columna: %d\n",i,j);
             cantSospechosos++; 
