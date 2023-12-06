@@ -268,7 +268,7 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
 
 void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
    int i, j, resultadoAnterior, aux;
-   int matErrores[MAX_LONG][MAX_MENS], cantErrores = 0, filaError, columnaError; 
+   int matErrores[MAX_LONG][MAX_MENS], cantErrores = 0, filaError = 0, columnaError = 0; 
    
    //bitsCol[MAX_MENS] = {0}, bitsFil[MAX_LONG] = {0};
    
@@ -333,7 +333,7 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
       }      
    printf("\n"); 
 
-   if ( cantErrores < 2 ) {
+   if ( cantErrores == 1 ) {
       printf("Bit erroneo en la fila: %d y la columna: %d\n",filaError,columnaError); 
       printf("Al ser solo un error se puede corregir\n");
    }
@@ -344,7 +344,9 @@ void analiza(int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
 
 
 void compara(int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX_MENS], int N, int M) {
-   int i, j;
+   int i, j, errores = 0;
+
+   printf("--Comparacion bit a bit de ambas matrices--\n");
 
    printf("Matriz 1:\n");
    for ( i = 0 ; i < N - 1 ; i++ ) {
@@ -362,8 +364,13 @@ void compara(int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX
 
    for ( i = 0 ; i < N - 1 ; i++ )
       for ( j = 0 ; j < M - 1 ; j++ )
-         if ( matMensajes[i][j] != matMensajes2[i][j] )
+         if ( matMensajes[i][j] != matMensajes2[i][j] ) {
             printf("Error en el bit de la fila: %d y columna: %d\n",i,j);
+            errores++;
+         }   
+
+   if (errores == 0)
+      printf("La matriz no se vio alterada al pasar por el canal\n");      
 }
 
 
@@ -397,6 +404,13 @@ int main(int argc, char *argv[]) {
 
     //B)
     calculaSucSimul(probSucSimul,fuente,matrizCanal);    
+
+    
+    for  (int i = 0 ; i++ ;i <2)
+       for ( int j = 0 ; j++ ; j <2 )
+          printf("%f  ",matrizCanal[i][j]);
+
+    printf("\n\n\n");   
 
     calculaProbB(probB,fuente,matrizCanal);
 
