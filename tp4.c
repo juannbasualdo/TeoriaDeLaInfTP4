@@ -378,7 +378,9 @@ void compara(int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX
          }   
 
    if (errores == 0)
-      printf("La matriz no se vio alterada al pasar por el canal\n");      
+      printf("La matriz no se vio alterada al pasar por el canal\n");  
+   else
+      printf("Cantidad total de errores:%d\n",errores);       
 }
 
 
