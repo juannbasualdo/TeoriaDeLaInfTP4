@@ -105,7 +105,7 @@ void entropiaPosteriori_A(float matrizPosteriori[MAX_ROWS][MAX_COLS], int num) {
       if (matrizPosteriori[i][num] != 0)
          suma += matrizPosteriori[i][num]*log2(1/matrizPosteriori[i][num]);   
    }
-   printf("H(A/b = %d) = %f\n",num,suma);
+   printf("H(A/b = %d) = %f bits\n",num,suma);
 }
 
 void generaMensajes(int matMensajes[MAX_MENS][MAX_MENS], int N, int M, float fuente[]) {
