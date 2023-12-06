@@ -55,11 +55,6 @@ void calculaProbB(float probB[MAX_COLS], float fuente[], float matrizCanal[][MAX
          probB[i] += (fuente[j]*matrizCanal[j][i]);
       }
    }
-
-   /*
-   for ( i = 0 ; i < 2 ; i++ )
-      printf("P(B = %d) = %f\n",i,probB[i]);
-   */
 }
 
 void calculoMatrizPosteriori(float matrizPosteriori[MAX_ROWS][MAX_COLS], float fuente[], float matrizCanal[MAX_ROWS][MAX_COLS], float probB[]) {
@@ -68,16 +63,9 @@ void calculoMatrizPosteriori(float matrizPosteriori[MAX_ROWS][MAX_COLS], float f
 
    for ( i = 0 ; i < 2 ; i++ )
       for ( j = 0 ; j < 2 ; j++ )
-         matrizPosteriori[i][j] =  ((fuente[i]*matrizCanal[i][j])/probB[j]);
+         if (probB[j] != 0)
+            matrizPosteriori[i][j] =  ((fuente[i]*matrizCanal[i][j])/probB[j]);
 
-   /*
-   for ( i = 0; i < 2 ; i++ ) {
-      for ( j  = 0 ; j < 2 ; j++ ) {
-         printf("\n");
-         printf("P( a = %d / b = % d ) = %f",i,j,matrizPosteriori[i][j]);
-      }
-   }
-   */
 }
 
 void calculaSucSimul(float probSucSimul[], float fuente[], float matrizCanal[MAX_ROWS][MAX_COLS]) {
@@ -85,20 +73,10 @@ void calculaSucSimul(float probSucSimul[], float fuente[], float matrizCanal[MAX
 
     for ( i = 0 ; i < 2 ; i++ ) {
        for ( j = 0 ; j < 2 ; j++ ) {
-          probSucSimul[k++] = fuente[i]*matrizCanal[i][j];
+          probSucSimul[k++] = (fuente[i])*(matrizCanal[i][j]);
        }
     }
-
-   /*
-   k = 0;
-   for ( i = 0 ; i < 2 ; i++ ) {
-      for ( j = 0 ; j < 2 ; j++ ) {
-         printf("a = %d , b = %d\n",i,j);
-         printf("%f",probSucSimul[k++]);
-         printf("\n");
-      }
-    }
-   */ 
+ 
 }
 
 void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MAX_COLS], float *equivoc_AB) {
@@ -107,7 +85,7 @@ void equivocacionCanal(float probSucSimul[], float matrizPosteriori[MAX_ROWS][MA
    for (int i = 0 ; i < 2 ; i++) 
       for ( int j = 0 ; j < 2 ; j++)
          if (matrizPosteriori[i][j] != 0)
-            *equivoc_AB += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
+            (*equivoc_AB) += probSucSimul[k++]*log2(1/matrizPosteriori[i][j]);
 
          
 }
@@ -279,8 +257,8 @@ void enviaMensajes(float matrizCanal[MAX_ROWS][MAX_COLS], int matMensajes[MAX_LO
    }
 
    printf("\nMatriz 2:\n");
-   for (i = 0 ; i < N ; i ++ ) {
-      for ( j = 0 ; j < M ; j++ )
+   for (i = 0 ; i < N-1 ; i ++ ) {
+      for ( j = 0 ; j < M-1 ; j++ )
          printf("%d  ",matMensajes2[i][j]);
       printf("\n");     
    }
@@ -375,7 +353,7 @@ void compara(int matMensajes[MAX_LONG][MAX_MENS], int matMensajes2[MAX_LONG][MAX
       printf("\n");
    }      
 
-   printf("\nMatriz 2:\n");
+   printf("\nMatriz 2 (paso a traves del canal):\n");
    for ( i = 0 ; i < N - 1 ; i++ ) {
       for ( j = 0 ; j < M - 1 ; j++ )
          printf("%d  ",matMensajes2[i][j]);
@@ -405,10 +383,10 @@ int main(int argc, char *argv[]) {
     float fuente[MAX_COLS]; //prob de que entre un 0 y de que entre un 1
     float matrizCanal[MAX_ROWS][MAX_COLS];
     float probPosteriori[MAX_ROWS][MAX_COLS];
-    float probB[MAX_COLS]; //probabilidad de que salga 0 y 1 sin saber que entro
+    float probB[MAX_COLS] = {0}; //probabilidad de que salga 0 y 1 sin saber que entro
     float probSucSimul[4]; //probabilidad sucesos simultaneos
     float matrizPosteriori[MAX_ROWS][MAX_COLS];
-    float equivoc_AB, entropiaDeA = 0, entropiaDeB = 0;
+    float equivoc_AB = 0, entropiaDeA = 0, entropiaDeB = 0;
     int   matMensajes[MAX_LONG][MAX_MENS];
     int   matMensajes2[MAX_LONG][MAX_MENS];
    
@@ -434,11 +412,11 @@ int main(int argc, char *argv[]) {
     printf("H(B/A) = %f bits\n",entropiaDeB - (entropiaDeA - equivoc_AB));
 
       //correccion -> eliminar funcion
-    if (entropiaDeA - equivoc_AB > 0){
+    if (entropiaDeA - equivoc_AB > 0) {
       printf("I(A,B) = %f bits\n",entropiaDeA - equivoc_AB);
       printf("I(B,A) = %f bits\n",entropiaDeA - equivoc_AB);
     }
-    else{
+    else {
       printf("I(A,B) = %f bits\n",equivoc_AB - entropiaDeA);
       printf("I(B,A) = %f bits\n",equivoc_AB - entropiaDeA);
       
